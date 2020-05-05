@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Three.JS Visualization Example</title>
+</head>
+<body>
+    <div>
+        <label for="audio-file">Choose an audio file</label>
+        <input type="file" name="audio-file" id="audio-file" accept="audio/*">
+
+        <button type="button" id="play-btn" disabled>Play</button>
+    </div>
+    <div>
+        <span>Beat magnitude: </span><span id="beat-mag"></span>
+        <span>Treble magnitude: </span><span id="treble-mag"></span>
+    </div>
+
+    <div id="main-canvas"></div>
+    <audio id="audio-control" controls style="width: 100%"></audio>
+</body>
+<script src="src/main.js"></script>
+</html>
