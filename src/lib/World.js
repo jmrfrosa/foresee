@@ -15,8 +15,11 @@ class World {
       alpha: true,
       antialias: true
     });
-    
-    this.planes = [];
+
+    this.renderer.shadowMap.enabled = true;
+    this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    this.scene.background = new THREE.Color(0xbbbbbb);
+
     this.boxes  = [];
     
     this.animate = this.animate.bind(this);
@@ -27,23 +30,30 @@ class World {
   }
   
   init() {
-    this.camera.position.set(0,0,100);
+    this.camera.position.set(0,12,0);
     this.camera.lookAt(this.scene.position);
     this.scene.add(this.camera);
     
-    this.addBox(20, 20);
-    this.addBox(10, 10);
-    this.addPlane();
+    const ambientLight = new THREE.AmbientLight(0xbbbbbb, 0.1);
+    this.scene.add(ambientLight);
+    const spotlight = new THREE.SpotLight(0xffffff, 0.9);
+    spotlight.position.set(15, 15, 15);
+    spotlight.lookAt(this.scene.position);
+    spotlight.castShadow = true;
+    this.scene.add(spotlight);
+
+    this.addBox(1, 1, 1).position.set(-5, 0, 0);
+    this.addBox(1, 1, 1).position.set(5, 0, 0);
     this.renderer.setSize(wWidth, wHeight);
     
     this.animate();
   }
   
-  addBox(width = 1, height = 1) {
-    const boxGeometry = new THREE.BoxGeometry(width, height);
-    const boxMaterial = new THREE.MeshBasicMaterial({
+  addBox(width = 1, height = 1, depth = 1) {
+    const boxGeometry = new THREE.BoxGeometry(width, height, depth);
+    const boxMaterial = new THREE.MeshPhongMaterial({
       color: randomColor(),
-      wireframe: true
+      dithering: true
     });
     
     const box = new THREE.Mesh(boxGeometry, boxMaterial);
@@ -51,24 +61,6 @@ class World {
     this.boxes.push(box);
 
     return box;
-  }
-  
-  addPlane() {
-    const planeGeometry = new THREE.PlaneGeometry(800, 800, 20, 20);
-    const planeMaterial = new THREE.MeshLambertMaterial({
-      color: randomColor(),
-      side: THREE.DoubleSide,
-      wireframe: true
-    });
-    
-    const plane = new THREE.Mesh(planeGeometry, planeMaterial);
-    plane.rotation.x = -0.5 * Math.PI;
-    plane.position.set(0,30,0);
-    
-    this.scene.add(plane);
-    this.planes.push(plane);
-
-    return plane;
   }
   
   animate() {
@@ -88,6 +80,12 @@ class World {
     const trebleBox = this.boxes[1];
     trebleBox.scale.set(trebleMagnitude, trebleMagnitude, trebleMagnitude);
     
+    // Simple camera orbiting code
+    const orbitSpeed = Date.now() * 0.0005; 
+    this.camera.position.x = 12 * Math.cos(orbitSpeed);
+    this.camera.position.z = 12 * Math.sin(orbitSpeed);
+    this.camera.lookAt(this.scene.position);
+
     this.renderer.render(this.scene, this.camera);
   }
   
