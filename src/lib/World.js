@@ -2,7 +2,7 @@ import * as THREE from 'three';
 import { randomColor } from './helpers';
 
 const wWidth = window.innerWidth;
-const wHeight = window.innerHeight - 54;
+const wHeight = window.innerHeight;
 const beatMagDom = document.getElementById("beat-mag");
 const trebleMagDom = document.getElementById("treble-mag");
 
@@ -79,49 +79,21 @@ class World {
     beatMagDom.textContent = beatMagnitude;
     trebleMagDom.textContent = trebleMagnitude;
 
+    // TODO:
+    // three.js documentation says we shouldn't be using .scale in the update loop
+    // figure out a better way to do it
     const beatBox = this.boxes[0];
     beatBox.scale.set(beatMagnitude, beatMagnitude, beatMagnitude);
 
-    // beatBox.geometry.vertices.forEach(vertex => {
-    //   vertex.normalize();
-    //   vertex.multiplyScalar(beatMagnitude);
-    // });
-
-    // beatBox.geometry.verticesNeedUpdate = true;
-    // beatBox.geometry.normalsNeedUpdate = true;
-    // beatBox.geometry.computeVertexNormals();
-    // beatBox.geometry.computeFaceNormals();
-
-
     const trebleBox = this.boxes[1];
     trebleBox.scale.set(trebleMagnitude, trebleMagnitude, trebleMagnitude);
-
-    // trebleBox.geometry.vertices.forEach(vertex => {
-    //   vertex.normalize();
-    //   vertex.multiplyScalar(0.01 * trebleMagnitude);
-    // });
-
-    // trebleBox.geometry.verticesNeedUpdate = true;
-    // trebleBox.geometry.normalsNeedUpdate = true;
-    // trebleBox.geometry.computeVertexNormals();
-    // trebleBox.geometry.computeFaceNormals();
-
-    // this.boxes.forEach(box => {
-    //   box.rotation.x += 0.01 * trebleMagnitude;
-    //   box.rotation.y += 0.05 * trebleMagnitude;
-    // })
-    
-    // this.planes.forEach(plane => {
-    //   plane.rotation.x += 0.01 * beatMagnitude;
-    //   plane.rotation.y += 0.1 * -beatMagnitude;
-    // })
     
     this.renderer.render(this.scene, this.camera);
   }
   
   onResize() {
     const newWidth = window.innerWidth;
-    const newHeight = window.innerHeight - 54;
+    const newHeight = window.innerHeight;
     this.camera.aspect = newWidth / newHeight;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(newWidth, newHeight);

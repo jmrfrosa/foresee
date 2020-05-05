@@ -14,10 +14,13 @@ class Sound {
     this.audioData = new Uint8Array(bufferLength);
   }
 
+  // Runs every loop
   process() {
     this.analyzer.getByteFrequencyData(this.audioData);
     const data = this.audioData;
 
+    // Using first third for low frequencies
+    // and 2/3s for high frequencies
     const lowFreqArray  = data.slice(0, Math.floor(data.length / 3) - 1);
     const highFreqArray = data.slice(Math.ceil(data.length / 3) - 1, data.length - 1);
 
