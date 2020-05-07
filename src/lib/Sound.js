@@ -1,13 +1,17 @@
 import { average, rangeFit } from './helpers';
 
 class Sound {
-  constructor(audioSource) {
-    const ctx = new AudioContext();
-    const src = ctx.createMediaElementSource(audioSource);
+  constructor(audioSource, mediaStream) {
+    const ctx = new window.AudioContext();
+    // const src = ctx.createMediaElementSource(audioSource);
+    // const src = ctx.createMediaStreamSource(audioSource.srcObject);
+    const src = ctx.createMediaStreamSource(mediaStream);
     this.analyzer = ctx.createAnalyser();
-  
+    
+    console.log("Source", src);
+
     src.connect(this.analyzer);
-    this.analyzer.connect(ctx.destination);
+    // this.analyzer.connect(ctx.destination);
     this.analyzer.fftSize = 512;
   
     const bufferLength = this.analyzer.frequencyBinCount;
