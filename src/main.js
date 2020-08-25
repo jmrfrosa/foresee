@@ -10,20 +10,34 @@ const webSocket = new WebSocket(`ws://${window.location.host.split(':')[0]}:443/
 const peerConnection = new RTCPeerConnection();
 
 webSocket.onmessage = e => {
-  console.log("Receiving local socket message", e);
-  const msg = JSON.parse(e.data);
-  if (msg.sdp) {
-    peerConnection.setRemoteDescription(new RTCSessionDescription(msg.sdp))
-    .then(() => {
-      return peerConnection.signalingState == "stable" || peerConnection.createAnswer()
-        .then(answer => peerConnection.setLocalDescription(answer))
-        .then(() => webSocket.send(JSON.stringify({ sdp: peerConnection.localDescription })));
-    })
-    .catch(error => console.log(error));
-  }
-  else if (msg.candidate) {
-    peerConnection.addIceCandidate(new RTCIceCandidate(msg.candidate))
-      .catch(error => console.log(error));
+  const { type, sender, data } = JSON.parse(e.data);
+
+  switch (type) {
+    case 'scan':
+      const { login, peers } = data;
+      console.log(peers);      
+      break;
+    case 'sdp':
+      console.log("Receiving sdp", data);
+      peerConnection.setRemoteDescription(new RTCSessionDescription(data))
+        .then(() => {
+          return peerConnection.signalingState == "stable" || peerConnection.createAnswer()
+            .then(answer => peerConnection.setLocalDescription(answer))
+            .then(() => webSocket.send(JSON.stringify({
+              type: 'sdp',
+              target: sender,
+              data: peerConnection.localDescription
+            })));
+        })
+        .catch(error => console.error(error));
+      break;
+    case 'candidate':
+      console.log("Receiving candidate", data);
+      peerConnection.addIceCandidate(new RTCIceCandidate(data))
+        .catch(error => console.error(error));
+      break;
+    default:
+      break;
   }
 }
 
